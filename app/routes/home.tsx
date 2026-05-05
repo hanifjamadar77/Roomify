@@ -1,7 +1,8 @@
 import type { Route } from "./+types/home";
 import Navbar from "../../components/Navbar";
 import {useOutletContext} from "react-router";
-import {ArrowRight, Upload} from "lucide-react";
+import {ArrowRight, ArrowUpRight, Clock, Layers, Upload} from "lucide-react";
+import Button from "../../components/ui/Button";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -16,27 +17,28 @@ export default function Home() {
   return (
       <div className="home">
         <Navbar {...(authContext ?? {})}/>
+
         <section className="hero">
           <div className="announce">
             <div className="dot">
               <div className="pulse"/>
             </div>
-            <p>AI room design visualizer</p>
+            <p>Introducing Roomify 2.0</p>
           </div>
 
-          <h1>Transform rooms before you build</h1>
+          <h1>Build beautiful spaces at the speed of thought with Roomify</h1>
           <p className="subtitle">
-            Upload a room photo and preview polished interior concepts in seconds.
+            Roomify is AI-first design environment that helps you visualize, render and ship architectural projects aster than ever.
           </p>
 
           <div className="actions">
             <a href="#upload" className="cta">
-              Get Started
+              Start Building
               <ArrowRight className="icon"/>
             </a>
-            <button className="demo" type="button">
-              View Demo
-            </button>
+            <Button variant={"outline"} size={"lg"}>
+              Watch Demo
+            </Button>
           </div>
 
           <div className="upload-shell" id="upload">
@@ -44,10 +46,54 @@ export default function Home() {
             <div className="upload-card">
               <div className="upload-head">
                 <div className="upload-icon">
-                  <Upload className="icon"/>
+                  <Layers className="icon"/>
                 </div>
-                <h3>Upload your room</h3>
-                <p>Sign in, then add a photo to start designing.</p>
+                <h3>Upload your floor plan</h3>
+                <p>Support JPG, PNG, formats up to 10MB</p>
+              </div>
+              <p>Upload Images</p>
+            </div>
+          </div>
+        </section>
+
+        <section className={"projects"}>
+          <div className="section-inner">
+            <div className={"section-head"}>
+              <div className={"copy"}>
+                <h2>Projects</h2>
+                <p>Yours latest work and shared community projects, all in one place</p>
+              </div>
+            </div>
+
+            <div className={"projects-grid"}>
+              <div className={"project-card group"}>
+                  <div className={"preview"}>
+                    <img
+                    src = "https://roomify-mlhuk267-dfwu1i.puter.site/projects/1770803585402/rendered.png"
+                    alt = "Project"/>
+
+                    <div className={"badge"}>
+                      <span>Community</span>
+                    </div>
+                  </div>
+
+                <div className={"card-body"}>
+                  <div>
+                    <h1>Project Monhattan</h1>
+
+                    <div className={"meta"}>
+                      <Clock size={12}/>
+                      <span>{new Date('01.05.2026')
+                          .toLocaleDateString()
+                      }</span>
+                      <span>By Hanif Jamadar</span>
+                    </div>
+                  </div>
+                  <div className={"arrow"}>
+                    <ArrowUpRight size = {18}/>
+                  </div>
+                </div>
+
               </div>
             </div>
           </div>
