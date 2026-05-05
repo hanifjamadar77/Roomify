@@ -5,7 +5,10 @@ import {
     PROGRESS_INCREMENT,
     PROGRESS_INTERVAL_MS,
     REDIRECT_DELAY_MS,
-} from "../lib/constant";
+} from "../lib/constants";
+
+const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png"];
+const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
 
 type UploadProps = {
     onComplete?: (base64Data: string) => void;
@@ -15,6 +18,7 @@ const Upload = ({onComplete}: UploadProps) => {
     const [file, setFile] = useState<File | null> (null);
     const [isDragging , setIsDragging] = useState(false);
     const [progress, setProgress] = useState(0);
+    const [error, setError] = useState<string | null>(null);
     const progressIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const redirectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -39,6 +43,21 @@ const Upload = ({onComplete}: UploadProps) => {
         }
 
         const selectedFile = files[0];
+
+        if (!ALLOWED_MIME_TYPES.includes(selectedFile.type)) {
+            setFile(null);
+            setProgress(0);
+            setError("Upload a JPG or PNG file.");
+            return;
+        }
+
+        if (selectedFile.size > MAX_UPLOAD_BYTES) {
+            setFile(null);
+            setProgress(0);
+            setError("Upload a file smaller than 50 MB.");
+            return;
+        }
+
         const reader = new FileReader();
 
         if (progressIntervalRef.current) {
@@ -51,6 +70,7 @@ const Upload = ({onComplete}: UploadProps) => {
 
         setFile(selectedFile);
         setProgress(0);
+        setError(null);
 
         reader.onload = () => {
             const base64Data = reader.result;
@@ -165,6 +185,7 @@ const Upload = ({onComplete}: UploadProps) => {
                         </p>
 
                         <p className={"help"}> Maximum file size 50 MB.</p>
+                        {error ? <p className={"help"}>{error}</p> : null}
                     </div>
                 </div>
             ) : (
