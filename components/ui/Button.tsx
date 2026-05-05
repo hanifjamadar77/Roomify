@@ -1,0 +1,34 @@
+import type { ButtonHTMLAttributes } from "react";
+
+type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: string;
+  size?: string;
+  fullWidth?: boolean;
+};
+
+const Button = ({
+  variant = "primary",
+  size = "md",
+  fullWidth = false,
+  className = "",
+  children,
+  ...props
+}: ButtonProps) => {
+  const classes = [
+    "btn",
+    `btn--${variant}`,
+    `btn--${size}`,
+    fullWidth ? "btn--full" : "",
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  return (
+    <button {...props} className={classes}>
+      {children}
+    </button>
+  );
+};
+
+export default Button;
