@@ -2,18 +2,23 @@ import React from 'react';
 import {useLocation, useParams} from "react-router";
 
 function VisualizerId() {
-    const {id} = useParams();
+    // const {id} = useParams();
     const location = useLocation();
-    const image = (location.state as {image?: string} | null)?.image;
+    const {initialImage, name} = location.state || {};
 
     return (
-        <div className="visualizer-route">
-            {image ? (
-                <img src={image} alt={`Uploaded floor plan ${id ?? ""}`} />
-            ) : (
-                <div>Visualizer</div>
-            )}
-        </div>
+        <section>
+            <h1>{name || 'Untitled Project'}</h1>
+
+            <div className={"visualizer"}>
+                {initialImage && (
+                    <div className={"image-container"}>
+                        <h2>Source image</h2>
+                        <img src={initialImage} alt="Source image" />
+                    </div>
+                )}
+            </div>
+        </section>
     );
 }
 

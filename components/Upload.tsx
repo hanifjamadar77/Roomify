@@ -5,7 +5,7 @@ import {
     PROGRESS_INCREMENT,
     PROGRESS_INTERVAL_MS,
     REDIRECT_DELAY_MS,
-} from "../lib/constants";
+} from "../lib/constant";
 
 const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png"];
 const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
