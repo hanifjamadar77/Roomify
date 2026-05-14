@@ -1,6 +1,9 @@
 import type { User } from "@heyputer/puter.js/types/modules/auth";
 import {getOrCreateHostingConfig, uploadImageToHosting} from "./puter.hosting";
 import {isHostedUrl} from "./utils";
+import puter from "@heyputer/puter.js";
+
+const PROJECT_PREFIX = "roomify_project_";
 
 const getPuter = async () => {
     if (typeof window === "undefined") {
@@ -34,6 +37,44 @@ export const getCurrentUser = async (): Promise<User | null> =>{
     }
 }
 
+const saveProjectToKv = async (project: DesignItem): Promise<DesignItem | null> => {
+    try {
+        const payload = {
+            ...project,
+            updatedAt: new Date().toISOString(),
+        };
+
+        await puter.kv.set(`${PROJECT_PREFIX}${project.id}`, payload);
+
+        return payload;
+    } catch (error) {
+        console.error("Failed to save project to Puter KV", error);
+        return null;
+    }
+};
+
+const getProjectsFromKv = async (): Promise<DesignItem[]> => {
+    try {
+        const projects = await puter.kv.list<DesignItem>(`${PROJECT_PREFIX}*`, true);
+
+        return projects.map(({value}) => value);
+    } catch (error) {
+        console.error("Failed to get projects from Puter KV", error);
+        return [];
+    }
+};
+
+const getProjectFromKv = async (id: string): Promise<DesignItem | null> => {
+    try {
+        const project = await puter.kv.get<DesignItem>(`${PROJECT_PREFIX}${id}`);
+
+        return project ?? null;
+    } catch (error) {
+        console.error("Failed to get project from Puter KV", error);
+        return null;
+    }
+};
+
 export const createProject = async ({item} : CreateProjectParams): Promise<DesignItem | null | undefined> =>{
     const projectId = item.id;
 
@@ -65,10 +106,13 @@ export const createProject = async ({item} : CreateProjectParams): Promise<Desig
         renderedImage: resolvedRender,
     }
 
-    try{
-        return payload;
-    }catch (e) {
-        console.log('Failed to save project', e)
-        return null;
-    }
+    return saveProjectToKv(payload);
 }
+
+export const getProjects = async () =>{
+    return getProjectsFromKv();
+}
+
+export const getProjectById = async ({ id }: { id: string }) => {
+    return getProjectFromKv(id);
+};
