@@ -38,7 +38,7 @@ function VisualizerId() {
                     ownerId: item.ownerId ?? userId ?? null,
                     isPublic : item.isPublic ?? false
                 }
-                const saved = await createProject({item: updatedItem, visibility: "private"})
+                const saved = await createProject({item: updatedItem})
 
                 if(saved){
                     setProject(saved);

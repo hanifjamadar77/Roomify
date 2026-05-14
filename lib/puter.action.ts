@@ -1,7 +1,6 @@
 import type { User } from "@heyputer/puter.js/types/modules/auth";
 import {getOrCreateHostingConfig, uploadImageToHosting} from "./puter.hosting";
 import {isHostedUrl} from "./utils";
-import puter from "@heyputer/puter.js";
 
 const PROJECT_PREFIX = "roomify_project_";
 
@@ -39,6 +38,11 @@ export const getCurrentUser = async (): Promise<User | null> =>{
 
 const saveProjectToKv = async (project: DesignItem): Promise<DesignItem | null> => {
     try {
+        const puter = await getPuter();
+        if (!puter) {
+            return null;
+        }
+
         const payload = {
             ...project,
             updatedAt: new Date().toISOString(),
@@ -55,6 +59,11 @@ const saveProjectToKv = async (project: DesignItem): Promise<DesignItem | null> 
 
 const getProjectsFromKv = async (): Promise<DesignItem[]> => {
     try {
+        const puter = await getPuter();
+        if (!puter) {
+            return [];
+        }
+
         const projects = await puter.kv.list<DesignItem>(`${PROJECT_PREFIX}*`, true);
 
         return projects.map(({value}) => value);
@@ -66,6 +75,11 @@ const getProjectsFromKv = async (): Promise<DesignItem[]> => {
 
 const getProjectFromKv = async (id: string): Promise<DesignItem | null> => {
     try {
+        const puter = await getPuter();
+        if (!puter) {
+            return null;
+        }
+
         const project = await puter.kv.get<DesignItem>(`${PROJECT_PREFIX}${id}`);
 
         return project ?? null;

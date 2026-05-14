@@ -19,6 +19,8 @@ export default function Home() {
 
   const navigate = useNavigate();
   const [projects, setProjects] = useState<DesignItem[]>([]);
+  const [isProjectsLoading, setIsProjectsLoading] = useState(false);
+  const [projectsError, setProjectsError] = useState<string | null>(null);
   const isCreatingProjectRef = useRef(false);
 
   const handleUploadComplete = async (base64Image : string) => {
@@ -34,21 +36,16 @@ export default function Home() {
            timestamp: Date.now()
        }
 
-       const saved = await createProject({item: newItem, visibility: 'private'});
+       const saved = await createProject({item: newItem});
 
        if(!saved){
            console.error("Failed to create project");
            return false;
        }
 
-       setProjects((prev) => [newItem, ...prev])
+       setProjects((prev) => [saved, ...prev])
 
-       navigate(`/visualizer/${newId}`, {
-           state: {
-               initialImage: saved.sourceImage,
-                initialRender: saved.renderedImage || null,
-               name
-           }});
+       navigate(`/visualizer/${newId}`);
 
        return true;
    }finally {
@@ -59,9 +56,18 @@ export default function Home() {
 
   useEffect(()=>{
       const loadProjects = async () => {
-          const items = await fetchProjects();
+          try {
+              setIsProjectsLoading(true);
+              setProjectsError(null);
+              const items = await fetchProjects();
 
-          setProjects(items)
+              setProjects(items)
+          } catch (error) {
+              console.error("Failed to load projects", error);
+              setProjectsError("Failed to load projects");
+          } finally {
+              setIsProjectsLoading(false);
+          }
       }
       loadProjects();
   }, [])
@@ -118,6 +124,15 @@ export default function Home() {
             </div>
 
             <div className={"projects-grid"}>
+              {projectsError && (
+                  <div className={"empty"}>{projectsError}</div>
+              )}
+              {!projectsError && isProjectsLoading && (
+                  <div className={"loading"}>Loading projects...</div>
+              )}
+              {!projectsError && !isProjectsLoading && projects.length === 0 && (
+                  <div className={"empty"}>No projects yet.</div>
+              )}
               {projects.map(({id, name, renderedImage, sourceImage, timestamp}) =>(
                   <div key={id} className={"project-card group"} onClick={() => navigate(`/visualizer/${id}`)}>
                     <div className={"preview"}>
